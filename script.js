@@ -85,7 +85,11 @@ addEventListener("DOMContentLoaded", () => {
                 document.getElementById("warning").textContent = "Budem potrebovat tvoje heslo.";
                 document.getElementById("warning").classList.add("show");
             }else{
-                if(heslo.length < 4){
+                if(heslo.length == 1){
+                    document.getElementById("warning").textContent = `${heslo.length} Znak? To ani nema zmysel skusat.`;
+                    document.getElementById("warning").classList.add("show");
+                }
+                else if(heslo.length < 4){
                     document.getElementById("warning").textContent = `${heslo.length} Znaky? To ani nema zmysel skusat.`;
                     document.getElementById("warning").classList.add("show");
                 }else if(heslo.length > 18){
@@ -98,18 +102,27 @@ addEventListener("DOMContentLoaded", () => {
                     else if(isNeviem(heslo)) type = 3;
                     else if(isAll(heslo)) type = 4;
                     else type = -1;
-                    document.getElementById("warning").textContent = "";
-                    document.getElementById("vysledok").textContent = casy[heslo.length - 4][type];
+                    setTimeout(() => {
+                        document.getElementById("warning").textContent = "";
+                        document.getElementById("popis").textContent = "Tvoje heslo by bolo cracknute za";
+                        document.getElementById("vysledok").textContent = casy[heslo.length - 4][type];
+                    }, 200);
                     window.scrollTo({
                         top: document.body.scrollHeight,
                         behavior: "smooth"
                     });
                     setTimeout(() => {
                         document.getElementById("karta").style.opacity = 1;
-                        divs2.forEach((div, index) => {
-                            div.style.opacity = 1-index/10;
-                        });
+                    }, 300);
+                    setTimeout(() => {
+                        
                         document.getElementById("karta").style.transform = "translate(-50%, -50%)";
+                        divs2.forEach((div, index) => {
+                            setTimeout(() => {
+                                div.style.opacity = 1-index/10;
+                                div.style.bottom = 0;
+                            }, index*50);
+                        });
                     }, 400)
                 }
             }
@@ -135,7 +148,7 @@ addEventListener("DOMContentLoaded", () => {
     function shrinkDiv2(div, index) {
         let scrolled = getScrollPercent();
         div.style.transform = `translate(-50%, -50%) scale(${(10-index)/10})`;
-        div.style.top = 90 + (10-index*0.4)*index*(scrolled-120)/100 + "%";
+        div.style.top = 86 + (10-index*0.4)*index*(scrolled-120)/100 + "%";
         div.style.zIndex = 10-index;
     }
 
@@ -144,8 +157,7 @@ addEventListener("DOMContentLoaded", () => {
         return 100 - (rect.top*100)/window.innerHeight;
     }
   
-    window.addEventListener("mousemove", () => {
-        let e = window.event;
+    window.addEventListener("mousemove", (e) => {
         let posX = e.clientX;
         let posY = e.clientY;
 
@@ -166,6 +178,7 @@ addEventListener("DOMContentLoaded", () => {
     })
 
     window.addEventListener("scroll", () => {
+        kruhy.style.bottom = 200 + window.scrollY/2.5 + "px";
         if(isElementVisible(testHeslo, 100)){
             parallax0.forEach((image) => {
                 image.style.transform = "translateY(" + window.scrollY/8 + "px)";
@@ -193,15 +206,14 @@ addEventListener("DOMContentLoaded", () => {
         tracker1.style.top = parseInt(tracker1.style.top) + diff + "px";
         tracker2.style.top = parseInt(tracker2.style.top) + diff + "px";
         prevScroll = scroll;
-    })
+    });
     
     setTimeout(() => {
         cover.style.transform = "translateY(-100%)";
         background.style.transform = "translateY(0px)";
+
     }, 500);
     setTimeout(() => {
-        kruhy.style.opacity = 1;
-        kruhy.style.bottom = 200 + "px";
         line0.style.width = "100%";
     }, 1600);
     setTimeout(() => {
